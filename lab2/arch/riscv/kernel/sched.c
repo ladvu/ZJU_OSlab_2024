@@ -3,7 +3,7 @@
 #include "stdio.h"
 
 #define Kernel_Page 0x80210000
-#define LOW_MEMORY 0x80211000
+#define LOW_MEMORY  0x80211000
 #define PAGE_SIZE 4096UL
 #define MAX_PRIORITY 114514
 #define MAX_COUNTER 114514 
@@ -32,13 +32,14 @@ void task_init(void) {
     // get the task_struct based on Kernel_Page and i
     // set state = TASK_RUNNING, counter = 0, priority = 5, 
     // blocked = 0, pid = i, thread.sp, thread.ra
+    task[i] = (struct task_struct *) (Kernel_Page + PAGE_SIZE * i);
     task[i]->state = TASK_RUNNING;
     task[i]->counter = 0;
     task[i]->priority = 5;
     task[i]->blocked = 0;
     task[i]->pid = i;
     task[i]->thread.sp = LOW_MEMORY + PAGE_SIZE * i;
-    task[i]->thread.ra = __init_sepc;
+    task[i]->thread.ra = (long long unsigned int )__init_sepc;
     printf("[PID = %d] Process Create Successfully!\n", task[i]->pid);
   }
   task_init_done = 1;
@@ -107,7 +108,6 @@ void schedule(void) {
 }
 
 #endif
-
 #ifdef PRIORITY
 
 // simulate the cpu timeslice, which measn a short time frame that gets assigned
@@ -133,9 +133,9 @@ void schedule(void) {
   for (int i = NR_TASKS - 1; i >= 0; i--) {
     if (!task[i]) continue;
     if (task[i]->state == TASK_RUNNING && task[i]->counter){
-      if (task[i]->priority < prio || task[i]->priority == prio && task[i]->counter == cnt) {
+      if (task[i]->priority < prio || task[i]->priority == prio && task[i]->counter < cnt) {
           next = i;
-          cnt = task[i]
+          cnt = task[i]->counter;
           prio = task[i]->priority;
       }
     }
