@@ -2,3 +2,5 @@
 System.map
 vmlinux
 Image
+*.DS_Store
+sfs.img
