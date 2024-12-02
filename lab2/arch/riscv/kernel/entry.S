@@ -100,7 +100,6 @@ __switch_to:
 
 .globl __init_sepc
 __init_sepc:
-  	# TODO 将test函数写入sepc
 	la t0, test
 	csrw sepc, t0
 	sret
